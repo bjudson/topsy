@@ -5,6 +5,7 @@ The only content type in Topsy is a Note. Notes can be organized into boards, an
 shared with other users. All the use cases for dealing with boards, notes, and permissions live
 in this module.
 """
+from .entities import Note
 
 
 class NoteUseCases():
@@ -16,7 +17,12 @@ class NoteUseCases():
 
     def create_note(self, note_dict, user_id, board_id=None):
         """Take a dictionary representing a note, save to DB and return entity."""
-        pass
+        note = Note(
+            title=note_dict['title'],
+            body=note_dict['body']
+        )
+
+        return self.storage.save_note(note)
 
     def get_note(self, note_id):
         """Return entity instance for a single note."""

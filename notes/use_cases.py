@@ -17,24 +17,26 @@ class NoteUseCases():
 
     def create_note(self, note_dict, user_id, board_id=None):
         """Take a dictionary representing a note, save to DB and return entity."""
-        note = Note(
-            title=note_dict['title'],
-            body=note_dict['body']
-        )
+        if user_id is None:
+            raise ValueError('User ID required to create note.')
+
+        if 'title' not in note_dict.keys():
+            raise ValueError('Title required to create note.')
+
+        if 'body' not in note_dict.keys():
+            raise ValueError('Body required to create note.')
+
+        note = Note(**note_dict)
 
         return self.storage.save_note(note)
 
     def get_note(self, note_id):
-        """Return entity instance for a single note."""
-        pass
+        """Retrieve entity instance for a single note."""
+        return self.storage.get_note(id=note_id)
 
-    def edit_note(self, note_dict):
-        """
-        Change the content or metadata of a note.
-
-        May want to break this into a number of smaller functions.
-        """
-        pass
+    def save_note(self, note):
+        """Save note instance to data store."""
+        return self.storage.save_note(note)
 
     def delete_note(self, note_dict):
         """Permanently delete a note."""
@@ -42,10 +44,6 @@ class NoteUseCases():
 
     def move_note(self, note_id, board_id):
         """Move a note to another board."""
-        pass
-
-    def transfer_note(self, note_id, user_id):
-        """Transfer a note to another user."""
         pass
 
     def create_board(self, name):

@@ -3,9 +3,11 @@
 import attr
 from datetime import datetime
 
+from topsy.entities import Entity
+
 
 @attr.s(frozen=True)
-class Note():
+class Note(Entity):
     """An object that represents a container for notes."""
 
     title = attr.ib()
@@ -19,7 +21,7 @@ class Note():
 
 
 @attr.s(frozen=True)
-class Board():
+class Board(Entity):
     """An object that represents a container for notes."""
 
     name = attr.ib()

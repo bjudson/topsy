@@ -26,7 +26,10 @@ class NoteUseCases():
         if 'body' not in note_dict.keys():
             raise ValueError('Body required to create note.')
 
-        note = Note(**note_dict)
+        try:
+            note = Note(**note_dict)
+        except TypeError:
+            raise ValueError('Note initialized with invalid field')
 
         return self.storage.save_note(note)
 
@@ -38,9 +41,9 @@ class NoteUseCases():
         """Save note instance to data store."""
         return self.storage.save_note(note)
 
-    def delete_note(self, note_dict):
+    def delete_note(self, note_id):
         """Permanently delete a note."""
-        pass
+        return self.storage.delete_note(note_id)
 
     def move_note(self, note_id, board_id):
         """Move a note to another board."""

@@ -73,13 +73,28 @@ class SaveNoteTestCase(unittest.TestCase):
     def test_edit_note_title_and_save(self):
         """Edit the title of a note."""
         new_title = 'new title'
-        note = self.note.replace('title', new_title)
+        note = self.note.replace(title=new_title)
 
         use_cases.save_note(note)
 
         new_note = storage.get_note(self.note.id)
         self.assertEqual(note, new_note)
         self.assertEqual(new_note.title, new_title)
+
+
+class DeleteNoteTestCase(unittest.TestCase):
+    """Tests for deleting a single note."""
+
+    def setUp(self):
+        self.note = Note(title='title', body='body')
+        self.note = storage.save_note(self.note)
+
+    def test_delete_note_successfully(self):
+        """Should be able to delete a note."""
+        use_cases.delete_note(self.note.id)
+
+        with self.assertRaises(storage.DoesNotExist):
+            storage.get_note(self.note.id)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -6,6 +6,6 @@ import attr
 class Entity():
     """Base class for all Topsy entities."""
 
-    def replace(self, field, value):
+    def replace(self, **kwargs):
         """Return new instance of this entity with updated field."""
-        return attr.assoc(self, **{field: value})
+        return attr.assoc(self, **kwargs)

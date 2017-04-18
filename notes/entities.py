@@ -1,4 +1,9 @@
-"""The value objects used by the notes app."""
+"""
+Value objects used by the notes app.
+
+We use the attrs package to construct simple, readable entity classes: "All attrs does is take your
+declaration, write dunder methods based on that information, and attach them to your class."
+"""
 
 import attr
 from datetime import datetime
@@ -8,7 +13,7 @@ from topsy.entities import Entity
 
 @attr.s(frozen=True)
 class Note(Entity):
-    """An object that represents a container for notes."""
+    """Notes are where users put the useful knowledge they need to save & share."""
 
     title = attr.ib()
     body = attr.ib()
@@ -22,7 +27,7 @@ class Note(Entity):
 
 @attr.s(frozen=True)
 class Board(Entity):
-    """An object that represents a container for notes."""
+    """Boards are where users put their many useful notes."""
 
     name = attr.ib()
     id = attr.ib(default=None)

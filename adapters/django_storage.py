@@ -29,8 +29,18 @@ class DjangoStorage():
 
     def get_note(self, id):
         """Retrieve note entity by ID."""
-        pass
+        try:
+            django_note = notes_models.Note.objects.get(id=id)
+        except notes_models.Note.DoesNotExist:
+            raise self.DoesNotExist('Note {} was not found.'.format(id))
+
+        return django_note.to_entity()
 
     def delete_note(self, id):
         """Permanently delete note by ID."""
-        pass
+        try:
+            django_note = notes_models.Note.objects.get(id=id)
+        except notes_models.Note.DoesNotExist:
+            raise self.DoesNotExist('Note {} was not found.'.format(id))
+
+        return django_note.delete()

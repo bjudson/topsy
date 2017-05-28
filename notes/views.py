@@ -37,7 +37,7 @@ def edit_note(request):
                 'success': False,
                 'message': 'Note {} does not exist'.format(note_id)
             },
-            status_code=400
+            status=400
         )
 
     if title is not None:

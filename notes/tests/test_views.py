@@ -1,7 +1,7 @@
 """
 Tests for views.
 
-These tend to be functional tests that make sure views return correct data (or the correct errors).
+These tend to be integration tests that make sure views return correct data (or the correct errors).
 They don't need to be very detailed. But they will test that view, use case, models, and entities
 are all playing nicely together.
 """

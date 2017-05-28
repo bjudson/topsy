@@ -1,8 +1,9 @@
 """
-Value objects used by the notes app.
+Domain objects used by the notes app.
 
-We use the attrs package to construct simple, readable entity classes: "All attrs does is take your
-declaration, write dunder methods based on that information, and attach them to your class."
+These classes map to Django models, but have no dependency on an ORM. We use the attrs package to
+construct simple, readable entity classes: "All attrs does is take your declaration, write dunder
+methods based on that information, and attach them to your class."
 """
 
 import attr

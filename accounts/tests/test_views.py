@@ -7,12 +7,14 @@ are all playing nicely together.
 """
 
 import json
+from unittest.mock import MagicMock
 
 from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
-from accounts.views import create_account
+from accounts.models import User as UserModel
+from accounts.views import create_account, login
 
 
 class CreateAccountTestCase(TestCase):
@@ -29,7 +31,7 @@ class CreateAccountTestCase(TestCase):
         request.session = {}
         return request
 
-    def test_create_account(self):
+    def test_create_account_success(self):
         user_dict = {
             'name': 'Bob',
             'email': 'bob@subgenius.com',
@@ -57,3 +59,45 @@ class CreateAccountTestCase(TestCase):
         self.assertEqual(response.status_code, 400, 'Error: {}'.format(response.content))
         self.assertEqual(response_data['success'], False)
         self.assertTrue('password' in response_data['message'])
+
+
+class LoginTestCase(TestCase):
+    def setUp(self):
+        self.req_factory = RequestFactory()
+        self.user = UserModel(email='bob@subgenius.com', name='Bob')
+        self.user.set_password('sl4ck')
+        self.user.save()
+
+    def create_request(self, data):
+        request = self.req_factory.post(
+            reverse('login'),
+            content_type='application/json',
+            data=json.dumps(data),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AnonymousUser()
+        request.session = MagicMock()
+        return request
+
+    def test_login_success(self):
+        credentials = {
+            'email': 'bob@subgenius.com',
+            'password': 'sl4ck'
+        }
+
+        request = self.create_request(credentials)
+        response = login(request)
+        response_data = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 200, 'Response: {}'.format(response.content))
+        self.assertEqual(response_data['user']['email'], credentials['email'])
+
+    def test_login_bad_password(self):
+        credentials = {
+            'email': 'bob@subgenius.com',
+            'password': 'slack'  # Incorrect password
+        }
+
+        request = self.create_request(credentials)
+        response = login(request)
+
+        self.assertEqual(response.status_code, 400, 'Response: {}'.format(response.content))

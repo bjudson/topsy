@@ -28,9 +28,9 @@ class Note(models.Model):
     body = models.TextField()
     board = models.ForeignKey('Board', null=True)
     created_by = models.IntegerField(null=True)
-    created_at = models.DateField()
-    modified_at = models.DateField()
-    status = models.CharField(max_length=50)
+    created_at = models.DateField(null=True)
+    modified_at = models.DateField(null=True)
+    status = models.CharField(max_length=50, default='active')
 
     objects = NoteManager()
 
@@ -40,7 +40,7 @@ class Note(models.Model):
 
         self.modified_at = timezone.now()
 
-        super(Note, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def to_entity(self):
         return entities.Note(
@@ -55,7 +55,42 @@ class Note(models.Model):
         )
 
 
+class BoardManager(models.Manager):
+    """Helper functions for notes."""
+
+    def from_entity(self, entity):
+        return self.model(
+            id=entity.id,
+            name=entity.name,
+            created_at=entity.created_at,
+            modified_at=entity.modified_at,
+            status=entity.status
+        )
+
+
 class Board(models.Model):
     """Boards are containers for notes."""
 
     name = models.CharField(max_length=150)
+    created_at = models.DateField(null=True)
+    modified_at = models.DateField(null=True)
+    status = models.CharField(max_length=50, default='active')
+
+    objects = BoardManager()
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+
+        self.modified_at = timezone.now()
+
+        super().save(*args, **kwargs)
+
+    def to_entity(self):
+        return entities.Board(
+            id=self.id,
+            name=self.name,
+            created_at=self.created_at,
+            modified_at=self.modified_at,
+            status=self.status
+        )

@@ -47,7 +47,7 @@ class User(AbstractBaseUser):
 
         self.modified_at = timezone.now()
 
-        super(User, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def to_entity(self):
         return entities.User(

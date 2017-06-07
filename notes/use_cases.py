@@ -5,7 +5,7 @@ The only content type in Topsy is a Note. Notes can be organized into boards, an
 shared with other users. All the use cases for dealing with boards, notes, and permissions live
 in this module.
 """
-from .entities import Note
+from .entities import Note, Board
 
 
 class NoteUseCases():
@@ -49,9 +49,12 @@ class NoteUseCases():
         """Move a note to another board."""
         pass
 
-    def create_board(self, name):
+    def create_board(self, name, user_id):
         """Create a board to group notes."""
-        pass
+        board = Board(name=name)
+        board = self.storage.save_board(board)
+        self.add_user_to_board(board.id, user_id, role='owner')
+        return board
 
     def get_user_boards(self, user_id):
         """Get metadata for all boards that a given user has access to."""
@@ -65,9 +68,9 @@ class NoteUseCases():
         """Get all notes within a board."""
         pass
 
-    def add_user_to_board(self, board_id, user_id):
+    def add_user_to_board(self, board_id, user_id, role='reader'):
         """Give another user permission to view a board."""
-        pass
+        return self.storage.save_board_user(board_id, user_id, role)
 
     def remove_user_from_board(self, board_id, user_id):
         """Revoke another user's permission to view a board."""

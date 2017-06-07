@@ -33,6 +33,12 @@ class DjangoStorage():
         django_user.save()
         return django_user.to_entity()
 
+    def save_board(self, board):
+        """Store board entity."""
+        django_board = notes_models.Board.objects.from_entity(board)
+        django_board.save()
+        return django_board.to_entity()
+
     def save_note(self, note):
         """Store note entity."""
         django_note = notes_models.Note.objects.from_entity(note)

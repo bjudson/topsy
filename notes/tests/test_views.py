@@ -13,7 +13,31 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from adapters.tests import model_factories
-from notes.views import get_note, edit_note
+from notes.views import create_board, get_note, edit_note
+
+
+class CreateBoardTestCase(TestCase):
+    def setUp(self):
+        self.req_factory = RequestFactory()
+
+    def create_request(self, data):
+        request = self.req_factory.post(
+            reverse('create_board'),
+            content_type='application/json',
+            data=json.dumps(data),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AnonymousUser()
+        request.session = {}
+        return request
+
+    def test_create_board_success(self):
+        name = 'Sprints'
+        request = self.create_request({'name': name})
+        response = create_board(request)
+        response_data = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 200, 'Error: {}'.format(response.content))
+        self.assertEqual(response_data['board']['name'], name)
 
 
 class GetNoteTestCase(TestCase):

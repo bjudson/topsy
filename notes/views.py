@@ -16,6 +16,16 @@ from .use_cases import NoteUseCases
 use_cases = NoteUseCases(DjangoStorage())
 
 
+def create_board(request):
+    """Create a new board."""
+    req_data = json.loads(request.body.decode('utf8'))
+    name = req_data.get('name')
+
+    board = use_cases.create_board(name=name, user_id=request.user.id)
+
+    return JsonResponse({'board': board.asdict()})
+
+
 def get_note(request, note_id):
     """Display an individual note."""
     note = use_cases.get_note(note_id)

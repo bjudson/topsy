@@ -9,7 +9,8 @@ import unittest
 
 from adapters.memory_storage import MemoryStorage
 from notes.use_cases import NoteUseCases
-from notes.entities import Note
+from notes.entities import Note, Board
+from accounts.entities import User
 
 storage = MemoryStorage()
 use_cases = NoteUseCases(storage)
@@ -81,6 +82,18 @@ class SaveNoteTestCase(unittest.TestCase):
         self.assertEqual(note, new_note)
         self.assertEqual(new_note.title, new_title)
 
+    def test_edit_note_board_and_save(self):
+        """Edit the board for a note."""
+        board = Board(name='the best notes')
+        board = storage.save_board(board)
+        note = self.note.replace(board_id=board.id)
+
+        use_cases.save_note(note)
+
+        new_note = storage.get_note(self.note.id)
+        self.assertEqual(note, new_note)
+        self.assertEqual(new_note.board_id, board.id)
+
 
 class DeleteNoteTestCase(unittest.TestCase):
     """Tests for deleting a single note."""
@@ -95,6 +108,25 @@ class DeleteNoteTestCase(unittest.TestCase):
 
         with self.assertRaises(storage.DoesNotExist):
             storage.get_note(self.note.id)
+
+
+class CreateBoardTestCase(unittest.TestCase):
+    """Tests for creating a board."""
+
+    def setUp(self):
+        self.user = User(id=1, name='Bob', email='bob@subgenius.com')
+        storage.create_user(self.user, 'sl4ck')
+
+    def test_create_board(self):
+        board_name = 'The Stark Fist of Removal'
+
+        board = use_cases.create_board(name=board_name, user_id=self.user.id)
+        saved_board = storage.get_board(board.id)
+        board_users = storage.get_board_users(board.id)
+
+        self.assertEqual(board_name, board.name)
+        self.assertEqual(board_name, saved_board.name)
+        self.assertTrue(self.user.id in [u['id'] for u in board_users])
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

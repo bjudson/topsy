@@ -13,12 +13,13 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from adapters.tests import model_factories
-from notes.views import create_board, get_note, edit_note
+from notes.views import create_board, get_note, edit_note, add_user_to_board
 
 
 class CreateBoardTestCase(TestCase):
     def setUp(self):
         self.req_factory = RequestFactory()
+        self.user = model_factories.User()
 
     def create_request(self, data):
         request = self.req_factory.post(
@@ -26,7 +27,7 @@ class CreateBoardTestCase(TestCase):
             content_type='application/json',
             data=json.dumps(data),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        request.user = AnonymousUser()
+        request.user = self.user
         request.session = {}
         return request
 
@@ -34,10 +35,62 @@ class CreateBoardTestCase(TestCase):
         name = 'Sprints'
         request = self.create_request({'name': name})
         response = create_board(request)
-        response_data = json.loads(response.content.decode('utf8'))
 
-        self.assertEqual(response.status_code, 200, 'Error: {}'.format(response.content))
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
+
+        response_data = json.loads(response.content.decode('utf8'))
         self.assertEqual(response_data['board']['name'], name)
+
+
+class AddUserToBoardTestCase(TestCase):
+    def setUp(self):
+        self.req_factory = RequestFactory()
+
+    def create_request(self, data, user=None):
+        request = self.req_factory.post(
+            reverse('add_user_to_board'),
+            content_type='application/json',
+            data=json.dumps(data),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = user or AnonymousUser()
+        request.session = {}
+        return request
+
+    def test_add_user_to_board(self):
+        board = model_factories.Board()
+        owner = model_factories.User(email='bob@blacklodge.net')
+        model_factories.BoardUser(user=owner, board=board, role='owner')
+        user = model_factories.User(email='mike@blacklodge.net')
+        request = self.create_request(
+            {
+                'user_id': user.id,
+                'board_id': board.id,
+                'role': 'editor'
+            },
+            user=owner)
+        response = add_user_to_board(request)
+
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
+        response_data = json.loads(response.content.decode('utf8'))
+        self.assertEqual(response_data['board']['name'], board.name)
+
+    def test_no_permission_to_add_user_to_board(self):
+        board = model_factories.Board()
+        req_user = model_factories.User(email='bob@blacklodge.net')
+        user = model_factories.User()
+        request = self.create_request({
+            'user_id': user.id,
+            'board_id': board.id,
+            'role': 'editor'
+        }, req_user)
+        response = add_user_to_board(request)
+
+        self.assertEqual(
+            response.status_code, 403,
+            'User lacking permissions to add user to board did not recieve error'
+        )
 
 
 class GetNoteTestCase(TestCase):
@@ -60,7 +113,8 @@ class GetNoteTestCase(TestCase):
         response = get_note(request, note.id)
         response_data = json.loads(response.content.decode('utf8'))
 
-        self.assertEqual(response.status_code, 200, 'Error: {}'.format(response.content))
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
         self.assertEqual(response_data['note']['id'], note.id)
 
 
@@ -86,5 +140,6 @@ class EditNoteTestCase(TestCase):
         response = edit_note(request)
         response_data = json.loads(response.content.decode('utf8'))
 
-        self.assertEqual(response.status_code, 200, 'Error: {}'.format(response.content))
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
         self.assertEqual(response_data['note']['title'], data['title'])

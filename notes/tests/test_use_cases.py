@@ -128,5 +128,31 @@ class CreateBoardTestCase(unittest.TestCase):
         self.assertEqual(board_name, saved_board.name)
         self.assertTrue(self.user.id in [u['id'] for u in board_users])
 
+
+class AddUserToBoardTestCase(unittest.TestCase):
+    """Tests for managing board permissions."""
+
+    def setUp(self):
+        self.user = User(id=1, name='Bob', email='bob@subgenius.com')
+        storage.create_user(self.user, 'sl4ck')
+
+        self.board = Board(id=1, name='The Book of the SubGenius')
+        storage.save_board(self.board)
+
+    def test_add_user_to_board(self):
+        """Adding user to board should create correct join record."""
+        use_cases.add_user_to_board(board_id=self.board.id, user_id=self.user.id, role='editor')
+
+        join = storage.board_users[0]
+
+        self.assertEqual(join['user_id'], self.user.id)
+        self.assertEqual(join['board_id'], self.board.id)
+        self.assertEqual(join['role'], 'editor')
+
+    def test_add_user_to_board_with_invalid_role(self):
+        """Using invalid role should raise ValueError."""
+        with self.assertRaises(ValueError):
+            use_cases.add_user_to_board(board_id=self.board.id, user_id=self.user.id, role='czar')
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

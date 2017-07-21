@@ -39,6 +39,20 @@ class DjangoStorage():
         django_board.save()
         return django_board.to_entity()
 
+    def save_board_user(self, board_id, user_id, role):
+        """Give user access to a board, or change user's role on board."""
+        board_user = notes_models.BoardUser.objects.create(
+            board_id=board_id, user_id=user_id, role=role)
+        return board_user.board.to_entity()
+
+    def get_role(self, user_id, board_id):
+        """Get user's role on a board. Returns none if user is not on board."""
+        try:
+            rel = notes_models.BoardUser.objects.get(user_id=user_id, board_id=board_id)
+        except notes_models.BoardUser.DoesNotExist:
+            return None
+        return rel.role
+
     def save_note(self, note):
         """Store note entity."""
         django_note = notes_models.Note.objects.from_entity(note)

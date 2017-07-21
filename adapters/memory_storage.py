@@ -74,6 +74,7 @@ class MemoryStorage():
         return board
 
     def save_board_user(self, board_id, user_id, role):
+        """Give user access to a board, or change user's role on board."""
         for board_user in self.board_users:
             if board_user['board_id'] == board_id and board_user['user_id'] == user_id:
                 board_user['role'] = role
@@ -113,3 +114,10 @@ class MemoryStorage():
                     })
 
         return users
+
+    def get_role(self, user_id, board_id):
+        for bu in self.board_users:
+            if bu['board_id'] == board_id and bu['user_id'] == user_id:
+                return bu['role']
+
+        return None

@@ -94,3 +94,11 @@ class Board(models.Model):
             modified_at=self.modified_at,
             status=self.status
         )
+
+
+class BoardUser(models.Model):
+    """User permission on board."""
+
+    board = models.ForeignKey(Board)
+    user = models.ForeignKey('accounts.User')
+    role = models.CharField(max_length=150)

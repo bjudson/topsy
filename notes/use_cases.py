@@ -6,6 +6,7 @@ shared with other users. All the use cases for dealing with boards, notes, and p
 in this module.
 """
 from .entities import Note, Board
+from topsy.permission_checker import board_permissions
 
 
 class NoteUseCases():
@@ -51,6 +52,8 @@ class NoteUseCases():
 
     def create_board(self, name, user_id):
         """Create a board to group notes."""
+        if user_id is None:
+            raise ValueError('User ID required to create board.')
         board = Board(name=name)
         board = self.storage.save_board(board)
         self.add_user_to_board(board.id, user_id, role='owner')
@@ -70,6 +73,13 @@ class NoteUseCases():
 
     def add_user_to_board(self, board_id, user_id, role='reader'):
         """Give another user permission to view a board."""
+        if board_id is None:
+            raise ValueError('Board ID required to add user to board.')
+        if user_id is None:
+            raise ValueError('User ID required to add user to board.')
+        if role is None or role not in board_permissions.keys():
+            raise ValueError('Invalid board role provided: {}'.format(role))
+
         return self.storage.save_board_user(board_id, user_id, role)
 
     def remove_user_from_board(self, board_id, user_id):

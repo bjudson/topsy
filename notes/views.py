@@ -12,13 +12,14 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
 from adapters.django_storage import DjangoStorage
+from adapters.django_logging import django_logging
 from .use_cases import NoteUseCases
 from .actions import NoteActions, PermissionError
 from topsy.permission_checker import PermissionChecker
 
 storage = DjangoStorage()
 use_cases = NoteUseCases(storage)
-actions = NoteActions(storage)
+actions = NoteActions(storage, django_logging)
 get_perms = PermissionChecker(storage)
 
 

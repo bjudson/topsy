@@ -15,7 +15,7 @@ class DoesNotExist(Exception):
 
 
 class DjangoStorage():
-    """Adapter to use system memory as a storage backend."""
+    """Adapter to use Django ORM as a storage backend."""
 
     def __init__(self):
         """Setup dictionaries as stores for each entity type."""

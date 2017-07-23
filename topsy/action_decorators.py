@@ -23,3 +23,19 @@ def permission(permission_required):
         return _wrapped_method
 
     return decorator
+
+
+def log(action_name):
+    """Decorator to apply to action methods to log action calls."""
+
+    def decorator(method, action_name=action_name):
+        @wraps(method, assigned=available_attrs(method))
+        def _wrapped_method(self, *args, **kwargs):
+            # action_name: kwarg1=val1, kwarg2=val2
+            self.logging.info('{}: {}'.format(action_name, ', '.join(
+                ['{}={}'.format(k, v) for k, v in kwargs.items()])))
+            return method(self, *args, **kwargs)
+
+        return _wrapped_method
+
+    return decorator

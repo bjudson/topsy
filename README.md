@@ -22,14 +22,14 @@ Use cases are functions that manipulate entities according to the business rules
 use cases are methods of a class that is instantiated with a storage adapter, allowing us to
 decouple them from the Django ORM.
 
-The views are responsible for passing user data to use cases and returning the result of the use
+The views are responsible for passing user input to use cases and returning the result of the use
 case to the user (or returning an error). No business logic code is stored in Django views or
 models, thus decoupling all domain code from the framework, and from any knowledge of the storage
 and HTTP layers.
 
 What this means is that the project does not use a lot of Django extras that couple different
-layers of the app (eg ModelForm class, which couples HTML forms to models). It also means that as a
-developer, you will have a lot more flexibility. [examples]
+layers of the app (eg ModelForm class, which couples HTML forms to Django models). It also means
+that as a developer, you will have a lot more flexibility. [examples]
 
 Inspiration for this project:
 

@@ -1,9 +1,22 @@
-"""
-Domain objects used by the notes app.
+"""Domain objects used by the notes app.
 
-These classes map to Django models, but have no dependency on an ORM. We use the attrs package to
-construct simple, readable entity classes: "All attrs does is take your declaration, write dunder
-methods based on that information, and attach them to your class."
+Entity classes map to Django models, but have no dependency on an ORM. Use cases exclusively deal in
+entities, which allows the business logic to be completely decoupled from the storage layer. The
+storage adapter is responsible for converting entities to and from the objects used by the storage
+backend, eg Django model instances.
+
+Entity objects are immutable, but have a convenience method Entity.replace() which returns a new
+copy of the object, with modified attributes. This is very similar to the Namedtuple._replace()
+method:
+>>> note = Note(title='Important note', body='TBD', id=1)
+>>> note2 = note.replace(title='Important note', body='my_p4ssw0rd')
+>>> note
+Note(title='Important note', body='TBD', id=1, board_id=None, created_by=None, ...)
+>>> note2
+Note(title='Important note', body='my_p4ssw0rd', id=1, board_id=None, created_by=None, ...)
+
+We use the attrs package to construct simple, readable entity classes: "All attrs does is take your
+declaration, write dunder methods based on that information, and attach them to your class."
 """
 
 import attr

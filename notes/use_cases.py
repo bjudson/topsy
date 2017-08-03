@@ -1,9 +1,13 @@
-"""
-Use cases for managing content in Topsy.
+"""Functions that encapsulate business logic for the app.
 
 The only content type in Topsy is a Note. Notes can be organized into boards, and boards can be
 shared with other users. All the use cases for dealing with boards, notes, and permissions live
 in this module.
+
+Use case functions are actually methods on a simple class, which is just used for injecting the
+storage dependency (but could be used to inject other dependencies). When retrieving or modifying
+stored objects (notes, boards, etc), use cases only operate on entities, which are converted to
+and from ORM objects by the storage layer.
 """
 from .entities import Note, Board
 from topsy.permissions import board_permissions

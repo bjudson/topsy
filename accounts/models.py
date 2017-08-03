@@ -1,4 +1,12 @@
-"""Models for Topsy content."""
+"""We keep our models simple and totally free of business logic.
+
+The only part of the app that will generally be using the models directly is the django_storage
+interface, which takes and returns only entities. In some cases it may be appropriate for views
+to directly reference models, for example to generate a redirect URL.
+
+We do allow convenience methods, like updating timestamps on save, and converting between entities
+and model instances.
+"""
 
 from django.utils import timezone
 from django.db import models

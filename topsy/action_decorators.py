@@ -3,10 +3,7 @@
 from functools import wraps
 from django.utils.decorators import available_attrs
 
-
-class PermissionError(Exception):
-    pass
-
+from topsy.permissions import PermissionError
 
 def permission(permission_required):
     """Decorator to apply to action methods to check permissions."""

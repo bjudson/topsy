@@ -14,8 +14,8 @@ from django.contrib.auth.decorators import login_required
 from adapters.django_storage import DjangoStorage
 from adapters.django_logging import django_logging
 from .use_cases import NoteUseCases
-from .actions import NoteActions, PermissionError
-from topsy.permission_checker import PermissionChecker
+from .actions import NoteActions
+from topsy.permissions import PermissionChecker, PermissionError
 
 storage = DjangoStorage()
 use_cases = NoteUseCases(storage)

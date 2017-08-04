@@ -6,7 +6,7 @@ shared with other users. All the use cases for dealing with boards, notes, and p
 in this module.
 """
 from .entities import Note, Board
-from topsy.permission_checker import board_permissions
+from topsy.permissions import board_permissions
 
 
 class NoteUseCases():

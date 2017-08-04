@@ -3,8 +3,7 @@
 By wrapping use cases in actions, we create a consistent system for checking permissions, 
 writing logs, and auditing."""
 
-from topsy.action_decorators import permission, log, PermissionError
-from adapters.django_logging import django_logging
+from topsy.action_decorators import permission, log
 from .use_cases import NoteUseCases
 
 

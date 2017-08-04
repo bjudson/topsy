@@ -8,6 +8,11 @@ board_permissions = {
 }
 
 
+class PermissionError(Exception):
+    """Raised when a user tries to perform an action they don't have permission for."""
+    pass
+
+
 class PermissionChecker():
     """Check user's permissions on a board.
 

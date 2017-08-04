@@ -2,7 +2,8 @@
 
 import unittest
 
-from ..action_decorators import permission, log, PermissionError
+from ..action_decorators import permission, log
+from ..permissions import PermissionError
 from adapters.memory_logging import MemoryLogging
 
 

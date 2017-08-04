@@ -2,7 +2,7 @@
 
 import unittest
 
-from ..permission_checker import PermissionChecker
+from ..permissions import PermissionChecker
 from notes.entities import Board
 from accounts.entities import User
 from adapters.memory_storage import MemoryStorage

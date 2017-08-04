@@ -42,6 +42,18 @@ class NoteUseCases():
         """Retrieve entity instance for a single note."""
         return self.storage.get_note(id=note_id)
 
+    def edit_note(self, note_id, title=None, body=None):
+        """Edit title and/or body of note."""
+        note = self.storage.get_note(id=note_id)
+
+        if title is not None:
+            note = note.replace(title=title)
+
+        if body is not None:
+            note = note.replace(body=body)
+
+        return self.storage.save_note(note)
+
     def save_note(self, note):
         """Save note instance to data store."""
         return self.storage.save_note(note)

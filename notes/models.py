@@ -21,7 +21,7 @@ class NoteManager(models.Manager):
             id=entity.id,
             title=entity.title,
             body=entity.body,
-            board=entity.board_id,
+            board_id=entity.board_id,
             created_by=entity.created_by,
             created_at=entity.created_at,
             modified_at=entity.modified_at,

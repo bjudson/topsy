@@ -7,9 +7,9 @@ formatting responses, and routing the requests to use cases.
 
 import json
 
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
+from topsy.utils import json_success, json_error
 from adapters.django_storage import DjangoStorage
 from adapters.django_logging import django_logging
 from .use_cases import NoteUseCases
@@ -26,11 +26,14 @@ get_perms = PermissionChecker(storage)
 def create_board(request):
     """Create a new board."""
     req_data = json.loads(request.body.decode('utf8'))
-    name = req_data.get('name')
+    try:
+        name = req_data['name']
+    except KeyError:
+        return json_error('Board name is required')
 
-    board = use_cases.create_board(name=name, user_id=request.user.id)
+    board = actions.create_board(name=name, user_id=request.user.id)
 
-    return JsonResponse({'board': board.asdict()})
+    return json_success({'board': board.asdict()})
 
 
 @login_required
@@ -48,37 +51,49 @@ def add_user_to_board(request):
             role=role,
             permissions=get_perms(request.user.id, board_id))
     except PermissionError as e:
-        return JsonResponse({'error': str(e)}, status=403)
+        return json_error(str(e), status=403)
 
-    return JsonResponse({'board': board.asdict()})
+    return json_success({'board': board.asdict()})
 
 
+@login_required
 def get_note(request, note_id):
     """Display an individual note."""
-    note = use_cases.get_note(note_id)
-    return JsonResponse({'note': note.asdict()})
+
+    try:
+        note = storage.get_note(note_id)
+        note = actions.get_note(note_id, permissions=get_perms(request.user.id, note.board_id))
+    except DjangoStorage.DoesNotExist:
+        return json_error('Note {} does not exist'.format(note_id))
+    except PermissionError as e:
+        return json_error(str(e), status=403)
+
+    return json_success({'note': note.asdict()})
 
 
+@login_required
 def edit_note(request):
     """Edit content/metadata of individual note."""
     req_data = json.loads(request.body.decode('utf8'))
-    note_id = req_data.get('id')
+    try:
+        note_id = req_data['id']
+    except KeyError:
+        return json_error('Note id is required')
+
     title = req_data.get('title')
     body = req_data.get('body')
 
     try:
-        note = use_cases.get_note(note_id)
+        note = storage.get_note(note_id)
+        note = actions.edit_note(
+            note_id,
+            title=title,
+            body=body,
+            permissions=get_perms(request.user.id, note.board_id)
+        )
     except DjangoStorage.DoesNotExist:
-        return JsonResponse(
-            {
-                'success': False,
-                'message': 'Note {} does not exist'.format(note_id)
-            }, status=400)
-    if title is not None:
-        note = note.replace(title=title)
+        return json_error('Note {} does not exist'.format(note_id))
+    except PermissionError as e:
+        return json_error(str(e), status=403)
 
-    if body is not None:
-        note = note.replace(body=body)
-
-    note = use_cases.save_note(note)
-    return JsonResponse({'note': note.asdict()})
+    return json_success({'note': note.asdict()})

@@ -19,10 +19,11 @@ class DoesNotExist(Exception):
 class DjangoStorage():
     """Adapter to use Django ORM as a storage backend."""
 
+    DoesNotExist = DoesNotExist
+
     def __init__(self):
         """Setup dictionaries as stores for each entity type."""
         self.notes = {}
-        self.DoesNotExist = DoesNotExist
 
     def create_user(self, user, password):
         """Create user entity.

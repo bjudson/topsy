@@ -40,7 +40,7 @@ class CreateBoardTestCase(TestCase):
                          'Error: {}'.format(response.content))
 
         response_data = json.loads(response.content.decode('utf8'))
-        self.assertEqual(response_data['board']['name'], name)
+        self.assertEqual(response_data['response']['board']['name'], name)
 
 
 class AddUserToBoardTestCase(TestCase):
@@ -74,7 +74,7 @@ class AddUserToBoardTestCase(TestCase):
         self.assertEqual(response.status_code, 200,
                          'Error: {}'.format(response.content))
         response_data = json.loads(response.content.decode('utf8'))
-        self.assertEqual(response_data['board']['name'], board.name)
+        self.assertEqual(response_data['response']['board']['name'], board.name)
 
     def test_no_permission_to_add_user_to_board(self):
         board = model_factories.Board()
@@ -97,49 +97,66 @@ class GetNoteTestCase(TestCase):
     def setUp(self):
         self.req_factory = RequestFactory()
 
-    def create_request(self, id):
+    def create_request(self, id, user=None):
         request = self.req_factory.get(
             reverse('get_note', args=[id]),
             content_type='application/json',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        request.user = AnonymousUser()
+        request.user = user or AnonymousUser()
         request.session = {}
         return request
 
-    def test_get_note(self):
-        note = model_factories.Note()
+    def test_get_note_success(self):
+        board = model_factories.Board()
+        user = model_factories.User(email='bob@blacklodge.net')
+        model_factories.BoardUser(user=user, board=board, role='reader')
+        note = model_factories.Note(board_id=board.id)
 
-        request = self.create_request(note.id)
+        request = self.create_request(note.id, user=user)
         response = get_note(request, note.id)
         response_data = json.loads(response.content.decode('utf8'))
 
         self.assertEqual(response.status_code, 200,
                          'Error: {}'.format(response.content))
-        self.assertEqual(response_data['note']['id'], note.id)
+        self.assertEqual(response_data['response']['note']['id'], note.id)
+
+    def test_get_note_permission_denied(self):
+        board = model_factories.Board()
+        user = model_factories.User(email='bob@blacklodge.net')
+        note = model_factories.Note(board_id=board.id)
+
+        request = self.create_request(note.id, user=user)
+        response = get_note(request, note.id)
+
+        self.assertEqual(response.status_code, 403,
+                         'Error: {}'.format(response.content))
 
 
 class EditNoteTestCase(TestCase):
     def setUp(self):
         self.req_factory = RequestFactory()
 
-    def create_request(self, data=None):
+    def create_request(self, data=None, user=None):
         request = self.req_factory.post(
             reverse('edit_note'),
             content_type='application/json',
             data=json.dumps(data),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        request.user = AnonymousUser()
+        request.user = user or AnonymousUser()
         request.session = {}
         return request
 
-    def test_save_note(self):
-        note = model_factories.Note(title='original title')
+    def test_edit_note(self):
+        board = model_factories.Board()
+        user = model_factories.User(email='bob@blacklodge.net')
+        model_factories.BoardUser(user=user, board=board, role='editor')
+        note = model_factories.Note(title='original title', board_id=board.id)
 
         data = {'id': note.id, 'title': 'new title'}
-        request = self.create_request(data)
+        request = self.create_request(data, user)
         response = edit_note(request)
         response_data = json.loads(response.content.decode('utf8'))
 
         self.assertEqual(response.status_code, 200,
                          'Error: {}'.format(response.content))
-        self.assertEqual(response_data['note']['title'], data['title'])
+        self.assertEqual(response_data['response']['note']['title'], data['title'])

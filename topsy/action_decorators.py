@@ -11,7 +11,10 @@ def permission(permission_required):
     def decorator(method, permission_required=permission_required):
         @wraps(method, assigned=available_attrs(method))
         def _wrapped_method(self, *args, **kwargs):
-            permissions = kwargs.pop('permissions')
+            try:
+                permissions = kwargs.pop('permissions')
+            except KeyError:
+                raise ValueError('Action requires a permissions argument.')
             if permission_required in permissions:
                 return method(self, *args, **kwargs)
 

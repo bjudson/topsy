@@ -19,6 +19,11 @@ class NoteActions():
     def create_board(self, name, user_id):
         return self.use_cases.create_board(name, user_id)
 
+    @log('board.delete')
+    @permission('delete')
+    def delete_board(self, id):
+        return self.use_cases.delete_board(id)
+
     # We're not going to log every view request, but we will check permissions
     @permission('view_notes')
     def get_board(self, board_id):
@@ -39,3 +44,8 @@ class NoteActions():
     def add_user_to_board(self, board_id, user_id, role):
         # Could have other side effects here, like sending a notification to the user added
         return self.use_cases.add_user_to_board(board_id, user_id, role)
+
+    @permission('remove_user')
+    @log('board.remove_user')
+    def remove_user_from_board(self, board_id, user_id):
+        return self.use_cases.remove_user_from_board(board_id, user_id)

@@ -90,8 +90,19 @@ class MemoryStorage():
 
         return record
 
+    def delete_board_user(self, board_id, user_id):
+        for key, board_user in enumerate(self.board_users):
+            if board_user['board_id'] == board_id and board_user['user_id'] == user_id:
+                bu = self.board_users.pop(key)
+                return bu
+
+        raise ValueError('User {} not joined to board {}.'.format(board_id, user_id))
+
     def get_board(self, id):
         """Retrieve board entity by ID."""
+        if type(id) is not int:
+            raise ValueError('Board id must be integer, not {}'.format(type(id).__name__))
+
         try:
             return self.boards[id]
         except KeyError:
@@ -121,3 +132,9 @@ class MemoryStorage():
                 return bu['role']
 
         return None
+
+    def get_board_notes(self, id):
+        return [note for note in self.notes.values() if note.board_id == id]
+
+    def delete_board(self, id):
+        return self.boards.pop(id)

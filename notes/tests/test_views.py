@@ -13,7 +13,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from adapters.tests import model_factories
-from notes.views import create_board, get_note, edit_note, add_user_to_board
+from notes.views import (create_board, get_note, edit_note, add_user_to_board, delete_board,
+    remove_user_from_board)
 
 
 class CreateBoardTestCase(TestCase):
@@ -41,6 +42,33 @@ class CreateBoardTestCase(TestCase):
 
         response_data = json.loads(response.content.decode('utf8'))
         self.assertEqual(response_data['response']['board']['name'], name)
+
+
+class DeleteBoardTestCase(TestCase):
+    def setUp(self):
+        self.req_factory = RequestFactory()
+
+    def create_request(self, data, user=None):
+        request = self.req_factory.post(
+            reverse('delete_board'),
+            content_type='application/json',
+            data=json.dumps(data),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = user or AnonymousUser()
+        request.session = {}
+        return request
+
+    def test_delete_board_success(self):
+        board = model_factories.Board()
+        owner = model_factories.User(email='bob@blacklodge.net')
+        model_factories.BoardUser(user=owner, board=board, role='owner')
+        request = self.create_request({'id': board.id}, user=owner)
+        response = delete_board(request)
+
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
+        response_data = json.loads(response.content.decode('utf8'))
+        self.assertEqual(response_data['response']['board']['status'], 'deleted')
 
 
 class AddUserToBoardTestCase(TestCase):
@@ -91,6 +119,35 @@ class AddUserToBoardTestCase(TestCase):
             response.status_code, 403,
             'User lacking permissions to add user to board did not recieve error'
         )
+
+
+class RemoveUserFromBoardTestCase(TestCase):
+    def setUp(self):
+        self.req_factory = RequestFactory()
+
+    def create_request(self, data, user=None):
+        request = self.req_factory.post(
+            reverse('remove_user_from_board'),
+            content_type='application/json',
+            data=json.dumps(data),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = user or AnonymousUser()
+        request.session = {}
+        return request
+
+    def test_remove_user_from_board_success(self):
+        board = model_factories.Board()
+        owner = model_factories.User(email='bob@blacklodge.net')
+        reader = model_factories.User(email='mike@blacklodge.net')
+        model_factories.BoardUser(user=owner, board=board, role='owner')
+        model_factories.BoardUser(user=reader, board=board, role='reader')
+        request = self.create_request({'board_id': board.id, 'user_id': reader.id}, user=owner)
+        response = remove_user_from_board(request)
+
+        self.assertEqual(response.status_code, 200,
+                         'Error: {}'.format(response.content))
+        resp_data = json.loads(response.content.decode('utf8'))
+        self.assertEqual(resp_data['response']['board_user']['user_id'], reader.id)
 
 
 class GetNoteTestCase(TestCase):

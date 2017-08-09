@@ -16,5 +16,8 @@ urlpatterns = [
     url(r'^notes/(?P<note_id>[0-9]+)/$', notes_views.get_note, name='get_note'),
     url(r'^notes/edit/$', notes_views.edit_note, name='edit_note'),
     url(r'^boards/create/$', notes_views.create_board, name='create_board'),
-    url(r'^boards/add-user/$', notes_views.add_user_to_board, name='add_user_to_board')
+    url(r'^boards/add-user/$', notes_views.add_user_to_board, name='add_user_to_board'),
+    url(r'^boards/remove-user/$', notes_views.remove_user_from_board,
+        name='remove_user_from_board'),
+    url(r'^boards/delete/$', notes_views.delete_board, name='delete_board')
 ]

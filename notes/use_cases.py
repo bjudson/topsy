@@ -64,7 +64,10 @@ class NoteUseCases():
 
     def move_note(self, note_id, board_id):
         """Move a note to another board."""
-        pass
+        note = self.storage.get_note(id=note_id)
+        note = note.replace(board_id=board_id)
+        note = self.storage.save_note(note)
+        return note
 
     def create_board(self, name, user_id):
         """Create a board to group notes."""
@@ -100,4 +103,18 @@ class NoteUseCases():
 
     def remove_user_from_board(self, board_id, user_id):
         """Revoke another user's permission to view a board."""
-        pass
+        return self.storage.delete_board_user(board_id=board_id, user_id=user_id)
+
+    def delete_board(self, board_id):
+        """Delete a board, all notes within it & all user joins to it."""
+        board = self.storage.get_board(id=board_id)
+        notes = self.storage.get_board_notes(id=board_id)
+        users = self.storage.get_board_users(id=board_id)
+
+        for note in notes:
+            self.storage.delete_note(id=note.id)
+
+        for user in users:
+            self.storage.delete_board_user(user_id=user['id'], board_id=board.id)
+
+        return self.storage.delete_board(id=board.id)

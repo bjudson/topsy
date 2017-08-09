@@ -37,6 +37,25 @@ def create_board(request):
 
 
 @login_required
+def delete_board(request):
+    req_data = json.loads(request.body.decode('utf8'))
+    try:
+        board_id = req_data['id']
+    except KeyError:
+        return json_error('Board id is required')
+
+    try:
+        board = actions.delete_board(
+            id=board_id,
+            permissions=get_perms(request.user.id, board_id)
+        )
+    except PermissionError as e:
+        return json_error(str(e), status=403)
+
+    return json_success({'board': board.asdict()})
+
+
+@login_required
 def add_user_to_board(request):
     """Add user to a board."""
     req_data = json.loads(request.body.decode('utf8'))
@@ -55,6 +74,23 @@ def add_user_to_board(request):
 
     return json_success({'board': board.asdict()})
 
+
+@login_required
+def remove_user_from_board(request):
+    """Remove user from a board."""
+    req_data = json.loads(request.body.decode('utf8'))
+    user_id = req_data.get('user_id')
+    board_id = req_data.get('board_id')
+
+    try:
+        board_user = actions.remove_user_from_board(
+            user_id=user_id,
+            board_id=board_id,
+            permissions=get_perms(request.user.id, board_id))
+    except PermissionError as e:
+        return json_error(str(e), status=403)
+
+    return json_success({'board_user': board_user})
 
 @login_required
 def get_note(request, note_id):

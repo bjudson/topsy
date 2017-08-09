@@ -110,3 +110,10 @@ class BoardUser(models.Model):
     board = models.ForeignKey(Board)
     user = models.ForeignKey('accounts.User')
     role = models.CharField(max_length=150)
+
+    def asdict(self):
+        return {
+            'board_id': self.board.id,
+            'user_id': self.user.id,
+            'role': self.role
+        }

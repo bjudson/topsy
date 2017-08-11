@@ -5,13 +5,11 @@ framework. The example is a note-taking app called Topsy, which allows users to 
 organize them into boards, and share them with other users. For the purposes of the example, we're
 assuming a (non-existent) single page web app that fetches data from Django views which return JSON.
 
-The project consists of three Django apps:
+The project consists of two Django apps:
 
 * notes: handles content creation, viewing, and management
 
 * accounts: handles account creation and management
-
-* payments: handles integration with Stripe
 
 In addition to the standard models and views within each app, you will find files containing
 entities and use cases.
@@ -26,10 +24,6 @@ The views are responsible for passing user input to use cases and returning the 
 case to the user (or returning an error). No business logic code is stored in Django views or
 models, thus decoupling all domain code from the framework, and from any knowledge of the storage
 and HTTP layers.
-
-What this means is that the project does not use a lot of Django extras that couple different
-layers of the app (eg ModelForm class, which couples HTML forms to Django models). It also means
-that as a developer, you will have a lot more flexibility. [examples]
 
 Inspiration for this project:
 

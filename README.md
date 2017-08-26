@@ -14,9 +14,9 @@ The project consists of two Django apps:
 In addition to the standard models and views within each app, you will find files containing
 entities and use cases.
 
-Entities are simple value object classes that correspond to the models.
+**Entities** are simple value object classes that correspond to the models.
 
-Use cases are functions that manipulate entities according to the business rules of the app. The
+**Use cases** are functions that manipulate entities according to the business rules of the app. The
 use cases are methods of a class that is instantiated with a storage adapter, allowing us to
 decouple them from the Django ORM.
 
@@ -25,10 +25,14 @@ case to the user (or returning an error). No business logic code is stored in Dj
 models, thus decoupling all domain code from the framework, and from any knowledge of the storage
 and HTTP layers.
 
-Inspiration for this project:
+## Inspiration for this project
 
 * [Hexagonal Architecture](http://alistair.cockburn.us/Hexagonal+architecture)
 
 * [The Clean Architecture](https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html)
 
 * [The Clean Architecture in Python](https://www.youtube.com/watch?v=DJtef410XaM)
+
+## Alternatives
+
+* Jordi Fierro [wrote a post](https://engineering.21buttons.com/clean-architecture-in-django-d326a4ab86a9) and [published a repo](https://github.com/jordifierro/abidria-api) exploring the same ideas with Django.

@@ -35,4 +35,6 @@ and HTTP layers.
 
 ## Alternatives
 
-* Jordi Fierro [wrote a post](https://engineering.21buttons.com/clean-architecture-in-django-d326a4ab86a9) and [published a repo](https://github.com/jordifierro/abidria-api) exploring the same ideas with Django.
+* Leonardo Giordani [wrote a post](http://blog.thedigitalcatonline.com/blog/2016/11/14/clean-architectures-in-python-a-step-by-step-example/) and [published a repo](https://github.com/lgiordani/rentomatic) applying this architecture to Django
+
+* Jordi Fierro [wrote a post](https://engineering.21buttons.com/clean-architecture-in-django-d326a4ab86a9) and [published a repo](https://github.com/jordifierro/abidria-api) exploring the same ideas with Django

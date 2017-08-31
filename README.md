@@ -20,6 +20,12 @@ entities and use cases.
 use cases are methods of a class that is instantiated with a storage adapter, allowing us to
 decouple them from the Django ORM.
 
+**Actions** are wrappers around use cases that run code whenever a use case is called. We use
+this abstraction to standardize logging and permissions handling for use cases. Generally, an aciton
+should be used whenever a user is directly invoking a use case, but if it is being called for
+another reason (e.g. from within another use case) we may want to bypass the action and call it
+directly.
+
 The views are responsible for passing user input to use cases and returning the result of the use
 case to the user (or returning an error). No business logic code is stored in Django views or
 models, thus decoupling all domain code from the framework, and from any knowledge of the storage
@@ -35,6 +41,6 @@ and HTTP layers.
 
 ## Alternatives
 
-* Leonardo Giordani [wrote a post](http://blog.thedigitalcatonline.com/blog/2016/11/14/clean-architectures-in-python-a-step-by-step-example/) and [published a repo](https://github.com/lgiordani/rentomatic) applying this architecture to Django
+* Leonardo Giordani [wrote a post](http://blog.thedigitalcatonline.com/blog/2016/11/14/clean-architectures-in-python-a-step-by-step-example/) and [published a repo](https://github.com/lgiordani/rentomatic) applying this architecture to Flask
 
 * Jordi Fierro [wrote a post](https://engineering.21buttons.com/clean-architecture-in-django-d326a4ab86a9) and [published a repo](https://github.com/jordifierro/abidria-api) exploring the same ideas with Django

@@ -1,28 +1,17 @@
-"""
-Adapter for Django ORM.
+"""Adapter for Django ORM.
 
 Pretty much all calls to the database in the live app should go through the methods of this class.
 The MemoryStorage class shares the same interface, but doesn't depend on an actual database. It can
 be swapped out for this one when testing use cases.
 """
 
+from .storage import Storage
 from accounts import models as accounts_models
 from notes import models as notes_models
 
 
-class DoesNotExist(Exception):
-    """Exception to be raised when an entity is not found in storage."""
-    pass
-
-
-class DjangoStorage():
+class DjangoStorage(Storage):
     """Adapter to use Django ORM as a storage backend."""
-
-    DoesNotExist = DoesNotExist
-
-    def __init__(self):
-        """Setup dictionaries as stores for each entity type."""
-        self.notes = {}
 
     def create_user(self, user, password):
         """Create user entity.
@@ -112,7 +101,11 @@ class DjangoStorage():
         return django_board_user.asdict()
 
     def delete_board(self, id):
-        django_board = notes_models.Board.objects.get(id=id)
+        try:
+            django_board = notes_models.Board.objects.get(id=id)
+        except notes_models.Board.DoesNotExist:
+            raise self.DoesNotExist('Board {} does not exist.'.format(id))
+
         django_board.status = 'deleted'
         django_board.save()
 

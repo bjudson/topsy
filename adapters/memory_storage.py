@@ -1,17 +1,11 @@
-"""
-Storage adapter that uses system memory as backend.
+"""Storage adapter that uses system memory as backend.
 
 Should have same API as database adapter.
 """
 
+from .storage import Storage
 
-class DoesNotExist(Exception):
-    """Exception to be raised when an entity is not found in storage."""
-
-    pass
-
-
-class MemoryStorage():
+class MemoryStorage(Storage):
     """Adapter to use system memory as a storage backend."""
 
     def __init__(self):
@@ -20,7 +14,6 @@ class MemoryStorage():
         self.boards = {}
         self.users = {}
         self.board_users = []
-        self.DoesNotExist = DoesNotExist
 
     def create_user(self, user, password):
         """Create user entity."""

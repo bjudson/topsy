@@ -21,7 +21,7 @@ use cases are methods of a class that is instantiated with a storage adapter, al
 decouple them from the Django ORM.
 
 **Actions** are wrappers around use cases that run code whenever a use case is called. We use
-this abstraction to standardize logging and permissions handling for use cases. Generally, an aciton
+this abstraction to standardize logging and permissions handling for use cases. Generally, an action
 should be used whenever a user is directly invoking a use case, but if it is being called for
 another reason (e.g. from within another use case) we may want to bypass the action and call it
 directly.
